@@ -179,6 +179,8 @@ def initialize_vocabulary(vocabulary_path):
       rev_vocab.extend(f.readlines())
     rev_vocab = [line.strip() for line in rev_vocab]
     vocab = dict([(x, y) for (y, x) in enumerate(rev_vocab)])
+#    print("vocab: {}".format(vocab[:10]))
+    print("rev_vocab: {}".format(rev_vocab[:10]))
     return vocab, rev_vocab
   else:
     raise ValueError("Vocabulary file %s not found.", vocabulary_path)
@@ -202,6 +204,20 @@ def sentence_to_token_ids(sentence, vocabulary,
   Returns:
     a list of integers, the token-ids for the sentence.
   """
+####################################
+  from subprocess import Popen, PIPE
+  p = Popen(['mecab', '-Owakati'], stdin=PIPE, stdout=PIPE)
+  p.stdin.write(sentence)
+  p.stdin.close()
+  sentence = p.stdout.read()
+  p.stdout.close()
+  p.wait()
+####################################
+
+  #print("sent: {}".format(sentence))
+  words = basic_tokenizer(sentence)
+  #print("words: {}".format(words))
+  #print("id: {}".format([vocabulary.get(w, UNK_ID) for w in words]))
 
   if tokenizer:
     words = tokenizer(sentence)
